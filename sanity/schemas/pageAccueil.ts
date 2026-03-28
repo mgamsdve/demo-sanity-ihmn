@@ -37,6 +37,13 @@ export default defineType({
   icon: DocumentIcon,
   fields: [
     defineField({
+      name: "title",
+      title: "Titre du document",
+      type: "string",
+      readOnly: true,
+      initialValue: "Page Accueil",
+    }),
+    defineField({
       name: "seo",
       title: "SEO",
       type: "object",

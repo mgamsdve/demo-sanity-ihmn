@@ -7,6 +7,17 @@ import { schemaTypes } from "./sanity/schemas";
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
 const studioUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const schemaTypesWithPageAccueilPreview = schemaTypes.map((schemaType) =>
+  schemaType.name === "pageAccueil"
+    ? {
+        ...schemaType,
+        preview: {
+          select: { title: "title" },
+          prepare: () => ({ title: "Page Accueil" }),
+        },
+      }
+    : schemaType,
+);
 
 export default defineConfig({
   name: "default",
@@ -60,6 +71,6 @@ export default defineConfig({
     visionTool(),
   ],
   schema: {
-    types: schemaTypes,
+    types: schemaTypesWithPageAccueilPreview,
   },
 });
