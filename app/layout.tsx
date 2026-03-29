@@ -4,7 +4,6 @@ import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity";
 import "./globals.css";
 import { getSiteConfig } from "@/lib/data";
-import { SanityLive } from "@/lib/sanity.live";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -37,7 +36,6 @@ export default async function RootLayout({
     <html lang="fr" className={poppins.variable}>
       <body className="bg-[#f4f8fc] font-sans text-gray-900 antialiased">
         {children}
-        <SanityLive />
         {isEnabled && <VisualEditing />}
       </body>
     </html>

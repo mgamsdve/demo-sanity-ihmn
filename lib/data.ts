@@ -1,7 +1,9 @@
 import "server-only";
 
+import { draftMode } from "next/headers";
 import { cache } from "react";
-import { sanityFetch } from "@/lib/sanity.live";
+import { client } from "@/lib/sanity";
+import { previewClient } from "@/lib/sanity.preview";
 import {
   ALL_FORMATIONS_QUERY,
   ALL_FORMATION_SLUGS_QUERY,
@@ -34,100 +36,141 @@ import type {
   Temoignage,
 } from "@/types";
 
-type LiveFetchOptions = {
-  params?: Record<string, unknown>;
-  tags?: string[];
-  perspective?: "published" | "drafts";
-  stega?: boolean;
-};
-
-function isOutsideRequestScopeError(error: unknown): error is Error {
-  return error instanceof Error && error.message.includes("outside a request scope");
-}
-
-async function fetchWithLive<T>(query: string, options: LiveFetchOptions = {}): Promise<T> {
+async function getDraftModeState() {
   try {
-    const { data } = await sanityFetch({ query, ...options });
-    return data as T;
+    return await draftMode();
   } catch (error) {
-    if (isOutsideRequestScopeError(error)) {
-      const { data } = await sanityFetch({
-        query,
-        ...options,
-        perspective: options.perspective ?? "published",
-        stega: options.stega ?? false,
-      });
-      return data as T;
+    if (error instanceof Error && error.message.includes("outside a request scope")) {
+      return { isEnabled: false };
     }
 
     throw error;
   }
 }
 
-export const getSiteConfig = cache(() =>
-  fetchWithLive<SiteConfig | null>(SITE_CONFIG_QUERY, { tags: ["global"] }),
-);
+export const getSiteConfig = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
 
-export const getNavigation = cache(() =>
-  fetchWithLive<NavigationConfig | null>(NAVIGATION_QUERY, { tags: ["global"] }),
-);
+  return activeClient.fetch<SiteConfig | null>(SITE_CONFIG_QUERY, {}, { next: { tags: ["global"] } });
+});
 
-export const getFooter = cache(() =>
-  fetchWithLive<FooterConfig | null>(FOOTER_QUERY, { tags: ["global"] }),
-);
+export const getNavigation = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
 
-export const getPageAccueil = cache(() =>
-  fetchWithLive<PageAccueil | null>(PAGE_ACCUEIL_QUERY, { tags: ["pageAccueil"] }),
-);
+  return activeClient.fetch<NavigationConfig | null>(NAVIGATION_QUERY, {}, { next: { tags: ["global"] } });
+});
 
-export const getPageAPropos = cache(() =>
-  fetchWithLive<PageAPropos | null>(PAGE_A_PROPOS_QUERY, { tags: ["pageAPropos"] }),
-);
+export const getFooter = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
 
-export const getPageContact = cache(() =>
-  fetchWithLive<PageContact | null>(PAGE_CONTACT_QUERY, { tags: ["pageContact"] }),
-);
+  return activeClient.fetch<FooterConfig | null>(FOOTER_QUERY, {}, { next: { tags: ["global"] } });
+});
 
-export const getPageFormations = cache(() =>
-  fetchWithLive<PageFormations | null>(PAGE_FORMATIONS_QUERY, { tags: ["pageFormations"] }),
-);
+export const getPageAccueil = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
 
-export const getPageProfesseurs = cache(() =>
-  fetchWithLive<PageProfesseurs | null>(PAGE_PROFESSEURS_QUERY, { tags: ["pageProfesseurs"] }),
-);
+  return activeClient.fetch<PageAccueil | null>(PAGE_ACCUEIL_QUERY, {}, { next: { tags: ["pageAccueil"] } });
+});
 
-export const getAllFormations = cache(() =>
-  fetchWithLive<Formation[]>(ALL_FORMATIONS_QUERY, { tags: ["formations"] }),
-);
+export const getPageAPropos = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
 
-export const getFormationBySlug = cache((slug: string) =>
-  fetchWithLive<Formation | null>(FORMATION_BY_SLUG_QUERY, { params: { slug }, tags: ["formations"] }),
-);
+  return activeClient.fetch<PageAPropos | null>(PAGE_A_PROPOS_QUERY, {}, { next: { tags: ["pageAPropos"] } });
+});
 
-export const getAllFormationSlugs = cache(() =>
-  fetchWithLive<{ slug: string }[]>(ALL_FORMATION_SLUGS_QUERY, {
-    tags: ["formations"],
-    perspective: "published",
-    stega: false,
-  }),
-);
+export const getPageContact = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
 
-export const getAllProfesseurs = cache(() =>
-  fetchWithLive<Professeur[]>(ALL_PROFESSEURS_QUERY, { tags: ["professeurs"] }),
-);
+  return activeClient.fetch<PageContact | null>(PAGE_CONTACT_QUERY, {}, { next: { tags: ["pageContact"] } });
+});
 
-export const getProfesseurBySlug = cache((slug: string) =>
-  fetchWithLive<ProfesseurDetail | null>(PROFESSEUR_BY_SLUG_QUERY, { params: { slug }, tags: ["professeurs"] }),
-);
+export const getPageFormations = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
 
-export const getAllProfesseurSlugs = cache(() =>
-  fetchWithLive<{ slug: string }[]>(ALL_PROFESSEUR_SLUGS_QUERY, {
-    tags: ["professeurs"],
-    perspective: "published",
-    stega: false,
-  }),
-);
+  return activeClient.fetch<PageFormations | null>(PAGE_FORMATIONS_QUERY, {}, { next: { tags: ["pageFormations"] } });
+});
 
-export const getAllTemoignages = cache(() =>
-  fetchWithLive<Temoignage[]>(ALL_TEMOIGNAGES_QUERY, { tags: ["temoignages"] }),
-);
+export const getPageProfesseurs = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
+
+  return activeClient.fetch<PageProfesseurs | null>(PAGE_PROFESSEURS_QUERY, {}, { next: { tags: ["pageProfesseurs"] } });
+});
+
+export const getAllFormations = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
+
+  return activeClient.fetch<Formation[]>(ALL_FORMATIONS_QUERY, {}, { next: { tags: ["formations"] } });
+});
+
+export const getFormationBySlug = cache(async (slug: string) => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
+
+  return activeClient.fetch<Formation | null>(FORMATION_BY_SLUG_QUERY, { slug }, { next: { tags: ["formations"] } });
+});
+
+export const getAllFormationSlugs = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
+
+  return activeClient
+    .withConfig({ useCdn: false })
+    .fetch<{ slug: string }[]>(
+      ALL_FORMATION_SLUGS_QUERY,
+      {},
+      {
+        perspective: "published",
+        filterResponse: true,
+        stega: false,
+        next: { tags: ["formations"] },
+      },
+    );
+});
+
+export const getAllProfesseurs = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
+
+  return activeClient.fetch<Professeur[]>(ALL_PROFESSEURS_QUERY, {}, { next: { tags: ["professeurs"] } });
+});
+
+export const getProfesseurBySlug = cache(async (slug: string) => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
+
+  return activeClient.fetch<ProfesseurDetail | null>(PROFESSEUR_BY_SLUG_QUERY, { slug }, { next: { tags: ["professeurs"] } });
+});
+
+export const getAllProfesseurSlugs = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
+
+  return activeClient
+    .withConfig({ useCdn: false })
+    .fetch<{ slug: string }[]>(
+      ALL_PROFESSEUR_SLUGS_QUERY,
+      {},
+      {
+        perspective: "published",
+        filterResponse: true,
+        stega: false,
+        next: { tags: ["professeurs"] },
+      },
+    );
+});
+
+export const getAllTemoignages = cache(async () => {
+  const { isEnabled } = await getDraftModeState();
+  const activeClient = isEnabled ? previewClient : client;
+
+  return activeClient.fetch<Temoignage[]>(ALL_TEMOIGNAGES_QUERY, {}, { next: { tags: ["temoignages"] } });
+});
