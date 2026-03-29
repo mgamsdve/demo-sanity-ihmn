@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cache } from "react";
-import { client } from "@/lib/sanity";
+import { sanityFetch } from "@/lib/sanity.live";
 import {
   ALL_FORMATIONS_QUERY,
   ALL_FORMATION_SLUGS_QUERY,
@@ -34,84 +34,100 @@ import type {
   Temoignage,
 } from "@/types";
 
+type LiveFetchOptions = {
+  params?: Record<string, unknown>;
+  tags?: string[];
+  perspective?: "published" | "drafts";
+  stega?: boolean;
+};
+
+function isOutsideRequestScopeError(error: unknown): error is Error {
+  return error instanceof Error && error.message.includes("outside a request scope");
+}
+
+async function fetchWithLive<T>(query: string, options: LiveFetchOptions = {}): Promise<T> {
+  try {
+    const { data } = await sanityFetch({ query, ...options });
+    return data as T;
+  } catch (error) {
+    if (isOutsideRequestScopeError(error)) {
+      const { data } = await sanityFetch({
+        query,
+        ...options,
+        perspective: options.perspective ?? "published",
+        stega: options.stega ?? false,
+      });
+      return data as T;
+    }
+
+    throw error;
+  }
+}
+
 export const getSiteConfig = cache(() =>
-  client.fetch<SiteConfig | null>(SITE_CONFIG_QUERY, {}, { next: { tags: ["global"] } }),
+  fetchWithLive<SiteConfig | null>(SITE_CONFIG_QUERY, { tags: ["global"] }),
 );
 
 export const getNavigation = cache(() =>
-  client.fetch<NavigationConfig | null>(NAVIGATION_QUERY, {}, { next: { tags: ["global"] } }),
+  fetchWithLive<NavigationConfig | null>(NAVIGATION_QUERY, { tags: ["global"] }),
 );
 
 export const getFooter = cache(() =>
-  client.fetch<FooterConfig | null>(FOOTER_QUERY, {}, { next: { tags: ["global"] } }),
+  fetchWithLive<FooterConfig | null>(FOOTER_QUERY, { tags: ["global"] }),
 );
 
 export const getPageAccueil = cache(() =>
-  client.fetch<PageAccueil | null>(PAGE_ACCUEIL_QUERY, {}, { next: { tags: ["pageAccueil"] } }),
+  fetchWithLive<PageAccueil | null>(PAGE_ACCUEIL_QUERY, { tags: ["pageAccueil"] }),
 );
 
 export const getPageAPropos = cache(() =>
-  client.fetch<PageAPropos | null>(PAGE_A_PROPOS_QUERY, {}, { next: { tags: ["pageAPropos"] } }),
+  fetchWithLive<PageAPropos | null>(PAGE_A_PROPOS_QUERY, { tags: ["pageAPropos"] }),
 );
 
 export const getPageContact = cache(() =>
-  client.fetch<PageContact | null>(PAGE_CONTACT_QUERY, {}, { next: { tags: ["pageContact"] } }),
+  fetchWithLive<PageContact | null>(PAGE_CONTACT_QUERY, { tags: ["pageContact"] }),
 );
 
 export const getPageFormations = cache(() =>
-  client.fetch<PageFormations | null>(PAGE_FORMATIONS_QUERY, {}, { next: { tags: ["pageFormations"] } }),
+  fetchWithLive<PageFormations | null>(PAGE_FORMATIONS_QUERY, { tags: ["pageFormations"] }),
 );
 
 export const getPageProfesseurs = cache(() =>
-  client.fetch<PageProfesseurs | null>(PAGE_PROFESSEURS_QUERY, {}, { next: { tags: ["pageProfesseurs"] } }),
+  fetchWithLive<PageProfesseurs | null>(PAGE_PROFESSEURS_QUERY, { tags: ["pageProfesseurs"] }),
 );
 
 export const getAllFormations = cache(() =>
-  client.fetch<Formation[]>(ALL_FORMATIONS_QUERY, {}, { next: { tags: ["formations"] } }),
+  fetchWithLive<Formation[]>(ALL_FORMATIONS_QUERY, { tags: ["formations"] }),
 );
 
 export const getFormationBySlug = cache((slug: string) =>
-  client.fetch<Formation | null>(FORMATION_BY_SLUG_QUERY, { slug }, { next: { tags: ["formations"] } }),
+  fetchWithLive<Formation | null>(FORMATION_BY_SLUG_QUERY, { params: { slug }, tags: ["formations"] }),
 );
 
 export const getAllFormationSlugs = cache(() =>
-  client
-    .withConfig({ useCdn: false })
-    .fetch<{ slug: string }[]>(
-      ALL_FORMATION_SLUGS_QUERY,
-      {},
-      {
-        perspective: "published",
-        filterResponse: true,
-        stega: false,
-        next: { tags: ["formations"] },
-      },
-    ),
+  fetchWithLive<{ slug: string }[]>(ALL_FORMATION_SLUGS_QUERY, {
+    tags: ["formations"],
+    perspective: "published",
+    stega: false,
+  }),
 );
 
 export const getAllProfesseurs = cache(() =>
-  client.fetch<Professeur[]>(ALL_PROFESSEURS_QUERY, {}, { next: { tags: ["professeurs"] } }),
+  fetchWithLive<Professeur[]>(ALL_PROFESSEURS_QUERY, { tags: ["professeurs"] }),
 );
 
 export const getProfesseurBySlug = cache((slug: string) =>
-  client.fetch<ProfesseurDetail | null>(PROFESSEUR_BY_SLUG_QUERY, { slug }, { next: { tags: ["professeurs"] } }),
+  fetchWithLive<ProfesseurDetail | null>(PROFESSEUR_BY_SLUG_QUERY, { params: { slug }, tags: ["professeurs"] }),
 );
 
 export const getAllProfesseurSlugs = cache(() =>
-  client
-    .withConfig({ useCdn: false })
-    .fetch<{ slug: string }[]>(
-      ALL_PROFESSEUR_SLUGS_QUERY,
-      {},
-      {
-        perspective: "published",
-        filterResponse: true,
-        stega: false,
-        next: { tags: ["professeurs"] },
-      },
-    ),
+  fetchWithLive<{ slug: string }[]>(ALL_PROFESSEUR_SLUGS_QUERY, {
+    tags: ["professeurs"],
+    perspective: "published",
+    stega: false,
+  }),
 );
 
 export const getAllTemoignages = cache(() =>
-  client.fetch<Temoignage[]>(ALL_TEMOIGNAGES_QUERY, {}, { next: { tags: ["temoignages"] } }),
+  fetchWithLive<Temoignage[]>(ALL_TEMOIGNAGES_QUERY, { tags: ["temoignages"] }),
 );

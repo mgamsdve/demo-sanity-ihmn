@@ -15,6 +15,7 @@ export const previewClient = createClient({
   useCdn: false,
   token,
   stega: {
+    enabled: true,
     studioUrl,
   },
 });
