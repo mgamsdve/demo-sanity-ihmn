@@ -2,22 +2,19 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { client, urlFor } from "@/lib/sanity";
 import {
-  ALL_FORMATION_SLUGS_QUERY,
-  FORMATION_BY_SLUG_QUERY,
-  PAGE_FORMATIONS_QUERY,
-} from "@/lib/queries";
-import type { Formation, PageFormations } from "@/types";
+  getAllFormationSlugs,
+  getFormationBySlug,
+  getPageFormations,
+} from "@/lib/data";
+import { FALLBACK_IMAGE_URL, urlFor } from "@/lib/sanity";
 
 interface FormationDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  const slugs = await client
-    .withConfig({ useCdn: false, stega: false })
-    .fetch<{ slug: string }[]>(ALL_FORMATION_SLUGS_QUERY, {}, { perspective: "published", filterResponse: true });
+  const slugs = await getAllFormationSlugs();
   return slugs.map(({ slug }) => ({ slug }));
 }
 
@@ -26,8 +23,8 @@ export async function generateMetadata({
 }: FormationDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const [pageData, formation] = await Promise.all([
-    client.withConfig({ stega: false }).fetch<PageFormations | null>(PAGE_FORMATIONS_QUERY),
-    client.withConfig({ stega: false }).fetch<Formation | null>(FORMATION_BY_SLUG_QUERY, { slug }),
+    getPageFormations(),
+    getFormationBySlug(slug),
   ]);
 
   if (!pageData) {
@@ -50,8 +47,8 @@ export async function generateMetadata({
 export default async function FormationDetailPage({ params }: FormationDetailPageProps) {
   const { slug } = await params;
   const [pageData, formation] = await Promise.all([
-    client.fetch<PageFormations | null>(PAGE_FORMATIONS_QUERY),
-    client.fetch<Formation | null>(FORMATION_BY_SLUG_QUERY, { slug }),
+    getPageFormations(),
+    getFormationBySlug(slug),
   ]);
 
   if (!pageData) {
@@ -70,10 +67,10 @@ export default async function FormationDetailPage({ params }: FormationDetailPag
 
   const formationImageUrl = formation.image
     ? urlFor(formation.image).width(900).height(450).fit("crop").url()
-    : formation.externalImageUrl ?? "";
+    : formation.externalImageUrl ?? FALLBACK_IMAGE_URL;
   const professeurImageUrl = professeur.image
     ? urlFor(professeur.image).width(128).height(128).fit("crop").url()
-    : professeur.externalImageUrl ?? "";
+    : professeur.externalImageUrl ?? FALLBACK_IMAGE_URL;
   const pageCopy = pageData.detail;
 
   return (
@@ -149,7 +146,7 @@ export default async function FormationDetailPage({ params }: FormationDetailPag
               width={72}
               height={72}
               sizes="72px"
-              className="mt-4 h-18 w-18 rounded-full object-cover"
+              className="mt-4 h-[72px] w-[72px] rounded-full object-cover"
             />
             <p className="mt-3 font-semibold text-gray-900">{professeur.name}</p>
             <p className="text-sm text-gray-500">{professeur.role}</p>

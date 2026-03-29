@@ -1,12 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { client } from "@/lib/sanity";
-import {
-  FOOTER_QUERY,
-  NAVIGATION_QUERY,
-  SITE_CONFIG_QUERY,
-} from "@/lib/queries";
-import type { FooterConfig, NavigationConfig, SiteConfig } from "@/types";
+import { getFooter, getNavigation, getSiteConfig } from "@/lib/data";
 
 export default async function SiteLayout({
   children,
@@ -14,9 +8,9 @@ export default async function SiteLayout({
   children: React.ReactNode;
 }) {
   const [siteData, navigation, footer] = await Promise.all([
-    client.fetch<SiteConfig | null>(SITE_CONFIG_QUERY),
-    client.fetch<NavigationConfig | null>(NAVIGATION_QUERY),
-    client.fetch<FooterConfig | null>(FOOTER_QUERY),
+    getSiteConfig(),
+    getNavigation(),
+    getFooter(),
   ]);
 
   if (!siteData || !navigation || !footer) {

@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import PageHeader from "@/components/PageHeader";
-import { client } from "@/lib/sanity";
-import { PAGE_CONTACT_QUERY } from "@/lib/queries";
-import type { PageContact } from "@/types";
+import { getPageContact } from "@/lib/data";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const pageData = await client.withConfig({ stega: false }).fetch<PageContact | null>(PAGE_CONTACT_QUERY);
+  const pageData = await getPageContact();
 
   if (!pageData) {
     throw new Error("Page Contact document is missing in Sanity.");
@@ -18,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ContactPage() {
-  const pageData = await client.fetch<PageContact | null>(PAGE_CONTACT_QUERY);
+  const pageData = await getPageContact();
 
   if (!pageData) {
     throw new Error("Page Contact document is missing in Sanity.");

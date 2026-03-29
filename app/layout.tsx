@@ -3,9 +3,7 @@ import { Poppins } from "next/font/google";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity";
 import "./globals.css";
-import { client } from "@/lib/sanity";
-import { SITE_CONFIG_QUERY } from "@/lib/queries";
-import type { SiteConfig } from "@/types";
+import { getSiteConfig } from "@/lib/data";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -14,7 +12,7 @@ const poppins = Poppins({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const siteConfig = await client.withConfig({ stega: false }).fetch<SiteConfig | null>(SITE_CONFIG_QUERY);
+  const siteConfig = await getSiteConfig();
 
   return {
     title: {

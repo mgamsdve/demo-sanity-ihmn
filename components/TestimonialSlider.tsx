@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import type { Temoignage } from "@/types";
-import { urlFor } from "@/lib/sanity";
+import { FALLBACK_IMAGE_URL, urlFor } from "@/lib/sanity";
 
 interface TestimonialSliderProps {
   temoignages: Temoignage[];
@@ -29,7 +29,7 @@ export default function TestimonialSlider({ temoignages, prevLabel, nextLabel }:
   const temoignage = temoignages[index];
   const temoignageImageUrl = temoignage.image
     ? urlFor(temoignage.image).width(80).height(80).fit("crop").url()
-    : temoignage.externalImageUrl ?? "";
+    : temoignage.externalImageUrl ?? FALLBACK_IMAGE_URL;
 
   return (
     <div className="rounded-xl bg-gray-50 p-6">

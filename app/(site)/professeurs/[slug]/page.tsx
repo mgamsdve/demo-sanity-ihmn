@@ -2,22 +2,19 @@ import type { Metadata } from "next";
 import FormationCard from "@/components/FormationCard";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { client, urlFor } from "@/lib/sanity";
 import {
-  ALL_PROFESSEUR_SLUGS_QUERY,
-  PAGE_PROFESSEURS_QUERY,
-  PROFESSEUR_BY_SLUG_QUERY,
-} from "@/lib/queries";
-import type { PageProfesseurs, ProfesseurDetail } from "@/types";
+  getAllProfesseurSlugs,
+  getPageProfesseurs,
+  getProfesseurBySlug,
+} from "@/lib/data";
+import { FALLBACK_IMAGE_URL, urlFor } from "@/lib/sanity";
 
 interface ProfesseurDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  const slugs = await client
-    .withConfig({ useCdn: false, stega: false })
-    .fetch<{ slug: string }[]>(ALL_PROFESSEUR_SLUGS_QUERY, {}, { perspective: "published", filterResponse: true });
+  const slugs = await getAllProfesseurSlugs();
   return slugs.map(({ slug }) => ({ slug }));
 }
 
@@ -26,8 +23,8 @@ export async function generateMetadata({
 }: ProfesseurDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
   const [pageData, professeur] = await Promise.all([
-    client.withConfig({ stega: false }).fetch<PageProfesseurs | null>(PAGE_PROFESSEURS_QUERY),
-    client.withConfig({ stega: false }).fetch<ProfesseurDetail | null>(PROFESSEUR_BY_SLUG_QUERY, { slug }),
+    getPageProfesseurs(),
+    getProfesseurBySlug(slug),
   ]);
 
   if (!pageData) {
@@ -52,8 +49,8 @@ export default async function ProfesseurDetailPage({
 }: ProfesseurDetailPageProps) {
   const { slug } = await params;
   const [pageData, professeur] = await Promise.all([
-    client.fetch<PageProfesseurs | null>(PAGE_PROFESSEURS_QUERY),
-    client.fetch<ProfesseurDetail | null>(PROFESSEUR_BY_SLUG_QUERY, { slug }),
+    getPageProfesseurs(),
+    getProfesseurBySlug(slug),
   ]);
 
   if (!pageData) {
@@ -68,7 +65,7 @@ export default async function ProfesseurDetailPage({
   const pageCopy = pageData.detail;
   const professeurImageUrl = professeur.image
     ? urlFor(professeur.image).width(128).height(128).fit("crop").url()
-    : professeur.externalImageUrl ?? "";
+    : professeur.externalImageUrl ?? FALLBACK_IMAGE_URL;
 
   return (
     <div className="bg-[#f4f8fc]">

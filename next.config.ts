@@ -1,10 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    turbo: {
-      resolveExtensions: [".tsx", ".ts", ".jsx", ".js"],
-    },
+  turbopack: {
+    resolveExtensions: [".tsx", ".ts", ".jsx", ".js"],
   },
   images: {
     remotePatterns: [

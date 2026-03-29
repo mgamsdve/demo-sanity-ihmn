@@ -21,7 +21,7 @@ export default function Navbar({ schoolName, navbar, socialLinks }: NavbarProps)
   return (
     <>
       <header className="fixed inset-x-0 top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-280 items-center justify-between px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-[1120px] items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-900 text-white">
               <svg
@@ -97,7 +97,7 @@ export default function Navbar({ schoolName, navbar, socialLinks }: NavbarProps)
       </header>
 
       <div
-        className={`fixed inset-0 z-60 bg-white transition-transform duration-300 ease-out lg:hidden ${
+        className={`fixed inset-0 z-[60] bg-white transition-transform duration-300 ease-out lg:hidden ${
           isMenuOpen ? "translate-x-0" : "pointer-events-none translate-x-full"
         }`}
         aria-hidden={!isMenuOpen}

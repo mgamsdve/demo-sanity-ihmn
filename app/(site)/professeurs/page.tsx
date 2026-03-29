@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import AnimatedGrid from "@/components/AnimatedGrid";
 import PageHeader from "@/components/PageHeader";
 import ProfesseurCard from "@/components/ProfesseurCard";
-import { client } from "@/lib/sanity";
-import { ALL_PROFESSEURS_QUERY, PAGE_PROFESSEURS_QUERY } from "@/lib/queries";
-import type { PageProfesseurs, Professeur } from "@/types";
+import { getAllProfesseurs, getPageProfesseurs } from "@/lib/data";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const pageData = await client.withConfig({ stega: false }).fetch<PageProfesseurs | null>(PAGE_PROFESSEURS_QUERY);
+  const pageData = await getPageProfesseurs();
 
   if (!pageData) {
     throw new Error("Page Professeurs document is missing in Sanity.");
@@ -21,8 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ProfesseursPage() {
   const [pageData, professeursData] = await Promise.all([
-    client.fetch<PageProfesseurs | null>(PAGE_PROFESSEURS_QUERY),
-    client.fetch<Professeur[]>(ALL_PROFESSEURS_QUERY),
+    getPageProfesseurs(),
+    getAllProfesseurs(),
   ]);
 
   if (!pageData) {

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Professeur } from "@/types";
-import { urlFor } from "@/lib/sanity";
+import { FALLBACK_IMAGE_URL, urlFor } from "@/lib/sanity";
 
 interface ProfesseurCardProps {
   professeur: Professeur;
@@ -16,7 +16,7 @@ export default function ProfesseurCard({
 }: ProfesseurCardProps) {
   const professeurImageUrl = professeur.image
     ? urlFor(professeur.image).width(400).height(400).fit("crop").url()
-    : professeur.externalImageUrl ?? "";
+    : professeur.externalImageUrl ?? FALLBACK_IMAGE_URL;
 
   return (
     <article className="flex flex-col items-center rounded-2xl border border-gray-100 bg-white p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl will-change-transform">

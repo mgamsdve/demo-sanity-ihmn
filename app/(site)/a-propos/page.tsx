@@ -4,14 +4,13 @@ import Link from "next/link";
 import PageHeader from "@/components/PageHeader";
 import ProfesseurCard from "@/components/ProfesseurCard";
 import StatBar from "@/components/StatBar";
-import { client, urlFor } from "@/lib/sanity";
 import {
-  ALL_PROFESSEURS_QUERY,
-  PAGE_A_PROPOS_QUERY,
-  PAGE_ACCUEIL_QUERY,
-  PAGE_PROFESSEURS_QUERY,
-} from "@/lib/queries";
-import type { PageAPropos, PageAccueil, PageProfesseurs, Professeur } from "@/types";
+  getAllProfesseurs,
+  getPageAccueil,
+  getPageAPropos,
+  getPageProfesseurs,
+} from "@/lib/data";
+import { FALLBACK_IMAGE_URL, urlFor } from "@/lib/sanity";
 
 const valueIcons = [
   <svg
@@ -51,7 +50,7 @@ const valueIcons = [
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
-  const pageData = await client.withConfig({ stega: false }).fetch<PageAPropos | null>(PAGE_A_PROPOS_QUERY);
+  const pageData = await getPageAPropos();
 
   if (!pageData) {
     throw new Error("Page À propos document is missing in Sanity.");
@@ -65,10 +64,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AboutPage() {
   const [pageData, homeData, professeursPage, professeursData] = await Promise.all([
-    client.fetch<PageAPropos | null>(PAGE_A_PROPOS_QUERY),
-    client.fetch<PageAccueil | null>(PAGE_ACCUEIL_QUERY),
-    client.fetch<PageProfesseurs | null>(PAGE_PROFESSEURS_QUERY),
-    client.fetch<Professeur[]>(ALL_PROFESSEURS_QUERY),
+    getPageAPropos(),
+    getPageAccueil(),
+    getPageProfesseurs(),
+    getAllProfesseurs(),
   ]);
 
   if (!pageData || !homeData || !professeursPage) {
@@ -78,7 +77,7 @@ export default async function AboutPage() {
   const pageCopy = pageData;
   const aboutImageUrl = pageCopy.missionSection.image
     ? urlFor(pageCopy.missionSection.image).width(900).height(650).fit("crop").url()
-    : pageCopy.missionSection.externalImageUrl ?? "";
+    : pageCopy.missionSection.externalImageUrl ?? FALLBACK_IMAGE_URL;
 
   return (
     <div className="bg-[#f4f8fc]">

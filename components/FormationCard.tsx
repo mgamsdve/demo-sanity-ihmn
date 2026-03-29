@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { urlFor } from "@/lib/sanity";
+import { FALLBACK_IMAGE_URL, urlFor } from "@/lib/sanity";
 import type { Formation } from "@/types";
 
 interface FormationCardProps {
@@ -20,7 +20,7 @@ export default function FormationCard({
 }: FormationCardProps) {
   const formationImageUrl = formation.image
     ? urlFor(formation.image).width(600).height(320).fit("crop").url()
-    : formation.externalImageUrl ?? "";
+    : formation.externalImageUrl ?? FALLBACK_IMAGE_URL;
   const teacher = formation.teacher;
 
   return (

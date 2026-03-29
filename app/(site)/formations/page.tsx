@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import AnimatedGrid from "@/components/AnimatedGrid";
 import FormationCard from "@/components/FormationCard";
 import PageHeader from "@/components/PageHeader";
-import { client } from "@/lib/sanity";
-import { ALL_FORMATIONS_QUERY, PAGE_FORMATIONS_QUERY } from "@/lib/queries";
-import type { Formation, PageFormations } from "@/types";
+import { getAllFormations, getPageFormations } from "@/lib/data";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const pageData = await client.withConfig({ stega: false }).fetch<PageFormations | null>(PAGE_FORMATIONS_QUERY);
+  const pageData = await getPageFormations();
 
   if (!pageData) {
     throw new Error("Page Formations document is missing in Sanity.");
@@ -21,8 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function FormationsPage() {
   const [pageData, formationsData] = await Promise.all([
-    client.fetch<PageFormations | null>(PAGE_FORMATIONS_QUERY),
-    client.fetch<Formation[]>(ALL_FORMATIONS_QUERY),
+    getPageFormations(),
+    getAllFormations(),
   ]);
 
   if (!pageData) {

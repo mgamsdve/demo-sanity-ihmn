@@ -4,13 +4,12 @@ import type { Metadata } from "next";
 import AnimatedSectionTitle from "@/components/AnimatedSectionTitle";
 import FormationCard from "@/components/FormationCard";
 import StatBar from "@/components/StatBar";
-import { client, urlFor } from "@/lib/sanity";
 import {
-  ALL_FORMATIONS_QUERY,
-  ALL_TEMOIGNAGES_QUERY,
-  PAGE_ACCUEIL_QUERY,
-} from "@/lib/queries";
-import type { Formation, PageAccueil, Temoignage } from "@/types";
+  getAllFormations,
+  getAllTemoignages,
+  getPageAccueil,
+} from "@/lib/data";
+import { FALLBACK_IMAGE_URL, urlFor } from "@/lib/sanity";
 
 const introIcons = [
   <svg key="vision" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -53,7 +52,7 @@ const reasonIcons = [
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
-  const pageAccueil = await client.withConfig({ stega: false }).fetch<PageAccueil | null>(PAGE_ACCUEIL_QUERY);
+  const pageAccueil = await getPageAccueil();
 
   if (!pageAccueil) {
     throw new Error("Page Accueil document is missing in Sanity.");
@@ -67,9 +66,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const [homeData, formationsData, temoignagesData] = await Promise.all([
-    client.fetch<PageAccueil | null>(PAGE_ACCUEIL_QUERY),
-    client.fetch<Formation[]>(ALL_FORMATIONS_QUERY),
-    client.fetch<Temoignage[]>(ALL_TEMOIGNAGES_QUERY),
+    getPageAccueil(),
+    getAllFormations(),
+    getAllTemoignages(),
   ]);
 
   if (!homeData) {
@@ -79,28 +78,28 @@ export default async function HomePage() {
   const homeCopy = homeData;
   const heroImageUrl = homeCopy.hero.image
     ? urlFor(homeCopy.hero.image).width(1600).height(1000).fit("crop").url()
-    : homeCopy.hero.externalImageUrl ?? "";
+    : homeCopy.hero.externalImageUrl ?? FALLBACK_IMAGE_URL;
 
   const aboutImageUrl = homeCopy.aboutSection.image
     ? urlFor(homeCopy.aboutSection.image).width(900).height(620).fit("crop").url()
-    : homeCopy.aboutSection.externalImageUrl ?? "";
+    : homeCopy.aboutSection.externalImageUrl ?? FALLBACK_IMAGE_URL;
   const whyChooseImageUrl = homeCopy.whyChooseUsSection.image
     ? urlFor(homeCopy.whyChooseUsSection.image).width(900).height(500).fit("crop").url()
-    : homeCopy.whyChooseUsSection.externalImageUrl ?? "";
+    : homeCopy.whyChooseUsSection.externalImageUrl ?? FALLBACK_IMAGE_URL;
   const newsletterImageUrl = homeCopy.newsletterSection.image
     ? urlFor(homeCopy.newsletterSection.image).width(1600).height(420).fit("crop").url()
-    : homeCopy.newsletterSection.externalImageUrl ?? "";
+    : homeCopy.newsletterSection.externalImageUrl ?? FALLBACK_IMAGE_URL;
   const facilityImageUrl = (index: number, width: number, height: number) => {
     const facility = homeCopy.facilitiesSection.facilities[index];
     return facility?.image
       ? urlFor(facility.image).width(width).height(height).fit("crop").url()
-      : facility?.externalImageUrl ?? "";
+      : facility?.externalImageUrl ?? FALLBACK_IMAGE_URL;
   };
   const galleryImageUrl = (index: number, width: number, height: number) => {
     const item = homeCopy.gallerySection.images[index];
     return item?.image
       ? urlFor(item.image).width(width).height(height).fit("crop").url()
-      : item?.externalImageUrl ?? "";
+      : item?.externalImageUrl ?? FALLBACK_IMAGE_URL;
   };
 
   const [line1, line2] = homeCopy.hero.headline.split("\n");
@@ -222,7 +221,11 @@ export default async function HomePage() {
             {homeCopy.facilitiesSection.facilities.slice(1, 5).map((facility) => (
               <article key={facility._key} className="group relative h-[150px] overflow-hidden rounded-2xl">
                 <Image
-                  src={facility.image ? urlFor(facility.image).width(600).height(300).fit("crop").url() : facility.externalImageUrl ?? ""}
+                  src={
+                    facility.image
+                      ? urlFor(facility.image).width(600).height(300).fit("crop").url()
+                      : facility.externalImageUrl ?? FALLBACK_IMAGE_URL
+                  }
                   alt={facility.alt}
                   fill
                   sizes="(min-width: 1024px) 33vw, 50vw"
@@ -366,7 +369,7 @@ export default async function HomePage() {
             {temoignagesData.map((temoignage) => {
               const temoignageImageUrl = temoignage.image
                 ? urlFor(temoignage.image).width(80).height(80).fit("crop").url()
-                : temoignage.externalImageUrl ?? "";
+                : temoignage.externalImageUrl ?? FALLBACK_IMAGE_URL;
 
               return (
                 <article key={temoignage._id} className="rounded-xl border border-[#dbe6f0] bg-white p-6 shadow-[0_8px_20px_rgba(16,24,40,0.04)] transition-all duration-300 hover:-translate-y-1 hover:shadow-xl will-change-transform">

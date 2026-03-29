@@ -5,6 +5,7 @@ import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
 const apiVersion = "2026-02-01";
+export const FALLBACK_IMAGE_URL = "/globe.svg";
 
 export const client = createClient({
   projectId: projectId ?? "missing-project-id",
