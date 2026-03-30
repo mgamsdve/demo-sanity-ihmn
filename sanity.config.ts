@@ -4,9 +4,18 @@ import { presentationTool } from "sanity/presentation";
 import { visionTool } from "@sanity/vision";
 import { schemaTypes } from "./sanity/schemas";
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID;
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production";
-const studioUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const projectId =
+  process.env.SANITY_STUDIO_PROJECT_ID ??
+  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ??
+  "ojttnmx1";
+const dataset =
+  process.env.SANITY_STUDIO_DATASET ??
+  process.env.NEXT_PUBLIC_SANITY_DATASET ??
+  "production";
+const previewOrigin =
+  process.env.NODE_ENV === "development"
+    ? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+    : "https://demo-sanity-ihmn.vercel.app";
 const schemaTypesWithPageAccueilPreview = schemaTypes.map((schemaType) =>
   schemaType.name === "pageAccueil"
     ? {
@@ -22,7 +31,7 @@ const schemaTypesWithPageAccueilPreview = schemaTypes.map((schemaType) =>
 export default defineConfig({
   name: "default",
   title: "Académie Lumière Studio",
-  projectId: projectId ?? "missing-project-id",
+  projectId,
   dataset,
   plugins: [
     structureTool({
@@ -61,8 +70,13 @@ export default defineConfig({
           ]),
     }),
     presentationTool({
+      // Hosted Studio URL: https://academie-lumiere.sanity.studio
+      // Manual CORS setup in sanity.io/manage -> Project -> API -> CORS Origins:
+      // - https://demo-sanity-ihmn.vercel.app (credentials: true)
+      // - http://localhost:3000 (credentials: true)
+      // - http://localhost:3333 (credentials: true, for local Studio origin)
       previewUrl: {
-        origin: studioUrl,
+        origin: previewOrigin,
         previewMode: {
           enable: "/api/draft-mode/enable",
         },

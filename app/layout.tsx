@@ -3,7 +3,6 @@ import { Poppins } from "next/font/google";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity";
 import "./globals.css";
-import DraftModeBar from "@/components/DraftModeBar";
 import { getSiteConfig } from "@/lib/data";
 
 const poppins = Poppins({
@@ -38,7 +37,6 @@ export default async function RootLayout({
       <body className="bg-[#f4f8fc] font-sans text-gray-900 antialiased">
         {children}
         {isEnabled && <VisualEditing />}
-        {isEnabled && <DraftModeBar />}
       </body>
     </html>
   );

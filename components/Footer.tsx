@@ -72,7 +72,12 @@ export default function Footer({ footer }: FooterProps) {
         </div>
 
         <div className="mt-10 flex items-center justify-between border-t border-[#d3dfeb] pt-4">
-          <Link href="/studio" className="text-xs text-gray-400 hover:text-blue-700 transition-colors">
+          <Link
+            href="https://academie-lumiere.sanity.studio"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-gray-400 transition-colors hover:text-blue-700"
+          >
             Studio ↗
           </Link>
           <p className="text-xs text-gray-600">{footer.copyrightText}</p>

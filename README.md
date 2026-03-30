@@ -16,6 +16,21 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Local Studio
+
+Run Sanity Studio on a dedicated local port:
+
+```bash
+npm run studio
+```
+
+Studio runs on [http://localhost:3333](http://localhost:3333).
+
+For local visual editing and preview:
+
+- run Next.js app on [http://localhost:3000](http://localhost:3000)
+- run Studio on [http://localhost:3333](http://localhost:3333)
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

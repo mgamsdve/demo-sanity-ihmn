@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "studio": "dotenv -e .env.local -- sanity dev --port 3333",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -18,7 +19,9 @@
     "next-sanity": "^9.4.15",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "sanity": "^3.85.0"
+    "react-is": "^19.2.4",
+    "sanity": "^3.85.0",
+    "styled-components": "^6.3.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,9 +1,16 @@
 import { defineCliConfig } from "sanity/cli";
 
 const cliConfig = {
+  studioHost: "academie-lumiere",
   api: {
-    projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "missing-project-id",
-    dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? "production",
+    projectId:
+      process.env.SANITY_STUDIO_PROJECT_ID ??
+      process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ??
+      "ojttnmx1",
+    dataset:
+      process.env.SANITY_STUDIO_DATASET ??
+      process.env.NEXT_PUBLIC_SANITY_DATASET ??
+      "production",
   },
   typegen: {
     enabled: true,
