@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { draftMode } from "next/headers";
-import { VisualEditing } from "next-sanity";
 import "./globals.css";
+import PresentationVisualEditing from "@/components/PresentationVisualEditing";
 import { getSiteConfig } from "@/lib/data";
 
 const poppins = Poppins({
@@ -36,7 +36,7 @@ export default async function RootLayout({
     <html lang="fr" className={poppins.variable}>
       <body className="bg-[#f4f8fc] font-sans text-gray-900 antialiased">
         {children}
-        {isEnabled && <VisualEditing />}
+        {isEnabled && <PresentationVisualEditing />}
       </body>
     </html>
   );
