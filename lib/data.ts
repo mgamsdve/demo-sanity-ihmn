@@ -50,79 +50,112 @@ async function getDraftModeState() {
 
 export const getSiteConfig = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<SiteConfig | null>(SITE_CONFIG_QUERY, {}, { next: { tags: ["global"] } });
+  if (isEnabled) {
+    return previewClient.fetch<SiteConfig | null>(SITE_CONFIG_QUERY, {});
+  }
+
+  return client.fetch<SiteConfig | null>(SITE_CONFIG_QUERY, {}, { next: { tags: ["global"] } });
 });
 
 export const getNavigation = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<NavigationConfig | null>(NAVIGATION_QUERY, {}, { next: { tags: ["global"] } });
+  if (isEnabled) {
+    return previewClient.fetch<NavigationConfig | null>(NAVIGATION_QUERY, {});
+  }
+
+  return client.fetch<NavigationConfig | null>(NAVIGATION_QUERY, {}, { next: { tags: ["global"] } });
 });
 
 export const getFooter = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<FooterConfig | null>(FOOTER_QUERY, {}, { next: { tags: ["global"] } });
+  if (isEnabled) {
+    return previewClient.fetch<FooterConfig | null>(FOOTER_QUERY, {});
+  }
+
+  return client.fetch<FooterConfig | null>(FOOTER_QUERY, {}, { next: { tags: ["global"] } });
 });
 
 export const getPageAccueil = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<PageAccueil | null>(PAGE_ACCUEIL_QUERY, {}, { next: { tags: ["pageAccueil"] } });
+  if (isEnabled) {
+    return previewClient.fetch<PageAccueil | null>(PAGE_ACCUEIL_QUERY, {});
+  }
+
+  return client.fetch<PageAccueil | null>(PAGE_ACCUEIL_QUERY, {}, { next: { tags: ["pageAccueil"] } });
 });
 
 export const getPageAPropos = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<PageAPropos | null>(PAGE_A_PROPOS_QUERY, {}, { next: { tags: ["pageAPropos"] } });
+  if (isEnabled) {
+    return previewClient.fetch<PageAPropos | null>(PAGE_A_PROPOS_QUERY, {});
+  }
+
+  return client.fetch<PageAPropos | null>(PAGE_A_PROPOS_QUERY, {}, { next: { tags: ["pageAPropos"] } });
 });
 
 export const getPageContact = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<PageContact | null>(PAGE_CONTACT_QUERY, {}, { next: { tags: ["pageContact"] } });
+  if (isEnabled) {
+    return previewClient.fetch<PageContact | null>(PAGE_CONTACT_QUERY, {});
+  }
+
+  return client.fetch<PageContact | null>(PAGE_CONTACT_QUERY, {}, { next: { tags: ["pageContact"] } });
 });
 
 export const getPageFormations = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<PageFormations | null>(PAGE_FORMATIONS_QUERY, {}, { next: { tags: ["pageFormations"] } });
+  if (isEnabled) {
+    return previewClient.fetch<PageFormations | null>(PAGE_FORMATIONS_QUERY, {});
+  }
+
+  return client.fetch<PageFormations | null>(PAGE_FORMATIONS_QUERY, {}, { next: { tags: ["pageFormations"] } });
 });
 
 export const getPageProfesseurs = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<PageProfesseurs | null>(PAGE_PROFESSEURS_QUERY, {}, { next: { tags: ["pageProfesseurs"] } });
+  if (isEnabled) {
+    return previewClient.fetch<PageProfesseurs | null>(PAGE_PROFESSEURS_QUERY, {});
+  }
+
+  return client.fetch<PageProfesseurs | null>(PAGE_PROFESSEURS_QUERY, {}, { next: { tags: ["pageProfesseurs"] } });
 });
 
 export const getAllFormations = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<Formation[]>(ALL_FORMATIONS_QUERY, {}, { next: { tags: ["formations"] } });
+  if (isEnabled) {
+    return previewClient.fetch<Formation[]>(ALL_FORMATIONS_QUERY, {});
+  }
+
+  return client.fetch<Formation[]>(ALL_FORMATIONS_QUERY, {}, { next: { tags: ["formations"] } });
 });
 
 export const getFormationBySlug = cache(async (slug: string) => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<Formation | null>(FORMATION_BY_SLUG_QUERY, { slug }, { next: { tags: ["formations"] } });
+  if (isEnabled) {
+    return previewClient.fetch<Formation | null>(FORMATION_BY_SLUG_QUERY, { slug });
+  }
+
+  return client.fetch<Formation | null>(FORMATION_BY_SLUG_QUERY, { slug }, { next: { tags: ["formations"] } });
 });
 
 export const getAllFormationSlugs = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient
+  if (isEnabled) {
+    return previewClient.fetch<{ slug: string }[]>(ALL_FORMATION_SLUGS_QUERY, {});
+  }
+
+  return client
     .withConfig({ useCdn: false })
     .fetch<{ slug: string }[]>(
       ALL_FORMATION_SLUGS_QUERY,
@@ -138,23 +171,32 @@ export const getAllFormationSlugs = cache(async () => {
 
 export const getAllProfesseurs = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<Professeur[]>(ALL_PROFESSEURS_QUERY, {}, { next: { tags: ["professeurs"] } });
+  if (isEnabled) {
+    return previewClient.fetch<Professeur[]>(ALL_PROFESSEURS_QUERY, {});
+  }
+
+  return client.fetch<Professeur[]>(ALL_PROFESSEURS_QUERY, {}, { next: { tags: ["professeurs"] } });
 });
 
 export const getProfesseurBySlug = cache(async (slug: string) => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<ProfesseurDetail | null>(PROFESSEUR_BY_SLUG_QUERY, { slug }, { next: { tags: ["professeurs"] } });
+  if (isEnabled) {
+    return previewClient.fetch<ProfesseurDetail | null>(PROFESSEUR_BY_SLUG_QUERY, { slug });
+  }
+
+  return client.fetch<ProfesseurDetail | null>(PROFESSEUR_BY_SLUG_QUERY, { slug }, { next: { tags: ["professeurs"] } });
 });
 
 export const getAllProfesseurSlugs = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient
+  if (isEnabled) {
+    return previewClient.fetch<{ slug: string }[]>(ALL_PROFESSEUR_SLUGS_QUERY, {});
+  }
+
+  return client
     .withConfig({ useCdn: false })
     .fetch<{ slug: string }[]>(
       ALL_PROFESSEUR_SLUGS_QUERY,
@@ -170,7 +212,10 @@ export const getAllProfesseurSlugs = cache(async () => {
 
 export const getAllTemoignages = cache(async () => {
   const { isEnabled } = await getDraftModeState();
-  const activeClient = isEnabled ? previewClient : client;
 
-  return activeClient.fetch<Temoignage[]>(ALL_TEMOIGNAGES_QUERY, {}, { next: { tags: ["temoignages"] } });
+  if (isEnabled) {
+    return previewClient.fetch<Temoignage[]>(ALL_TEMOIGNAGES_QUERY, {});
+  }
+
+  return client.fetch<Temoignage[]>(ALL_TEMOIGNAGES_QUERY, {}, { next: { tags: ["temoignages"] } });
 });

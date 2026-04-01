@@ -11,7 +11,7 @@ export const client = createClient({
   projectId: projectId ?? "missing-project-id",
   dataset,
   apiVersion,
-  useCdn: true,
+  useCdn: false,
   stega: false,
 });
 
