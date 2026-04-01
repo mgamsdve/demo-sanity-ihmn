@@ -139,13 +139,6 @@ export default defineType({
       title: "Section À propos",
       type: "object",
       fields: [
-        defineField({ name: "title", title: "Titre", type: "string", validation: (rule) => rule.required() }),
-        defineField({
-          name: "highlightWord",
-          title: "Mot en surbrillance",
-          type: "string",
-          validation: (rule) => rule.required(),
-        }),
         defineField({ name: "body", title: "Texte", type: "text", rows: 5, validation: (rule) => rule.required() }),
         ...imageFields,
         defineField({ name: "ctaLabel", title: "Label CTA", type: "string", validation: (rule) => rule.required() }),

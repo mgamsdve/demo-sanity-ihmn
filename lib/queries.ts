@@ -68,8 +68,6 @@ export const PAGE_ACCUEIL_QUERY = defineQuery(/* groq */ `*[_id == "pageAccueil"
     body
   },
   aboutSection{
-    title,
-    highlightWord,
     body,
     image{
       asset->{

@@ -90,8 +90,6 @@ export interface PageAccueil {
   stats: Stat[];
   introCards: IntroCard[];
   aboutSection: {
-    title: string;
-    highlightWord: string;
     body: string;
     ctaLabel: string;
     ctaHref: string;

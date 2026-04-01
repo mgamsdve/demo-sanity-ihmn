@@ -127,8 +127,6 @@ const pageAccueilData = {
     }),
   ],
   aboutSection: {
-    title: "Former les leaders de demain",
-    highlightWord: "leaders",
     body: "L'Académie Lumière est un établissement d'enseignement privé fondé en 2004. Notre mission est d'offrir une éducation d'excellence, inclusive et tournée vers l'avenir, en combinant rigueur académique et épanouissement personnel. Nous croyons que chaque élève possède un potentiel unique qu'il nous appartient de révéler.",
     externalImageUrl: "https://images.unsplash.com/photo-1562774053-701939374585?w=800",
     ctaLabel: "En savoir plus",
